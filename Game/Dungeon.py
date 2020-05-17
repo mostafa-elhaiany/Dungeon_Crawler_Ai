@@ -21,7 +21,7 @@ class Dungeon:
         self.player=None
         if(not board):
             self.state='building'
-            self.grid=[[0 for _ in range(ROWS)]for _ in range(COLS)]
+            self.grid=[['E' for _ in range(ROWS)]for _ in range(COLS)]
         else:
             self.state='playing'
             self.grid=board
@@ -33,6 +33,26 @@ class Dungeon:
     
 
 # main functions
+
+    def start_new_game(self,board=None):
+        self.running = True
+        print('loading board!!')
+        self.selected = None
+        self.mouse_pos = None
+        self.number=None
+        self.finished=False
+        self.obstacles=[]
+        self.monsters=[]
+        self.weapon=None
+        self.player=None
+        if(not board):
+            self.state='building'
+            self.grid=[['E' for _ in range(ROWS)]for _ in range(COLS)]
+        else:
+            self.state='playing'
+            self.grid=board
+            self.loadBoardData()
+
     def loadBoardData(self):
         for rIdx,r in enumerate(self.grid):
             for cIdx,c in enumerate(r):
@@ -125,7 +145,7 @@ class Dungeon:
     #updates the game with the mouse position
     def update(self,state):
         self.mouse_pos= pygame.mouse.get_pos()
-        self.grid=[[0 for _ in range(ROWS)]for _ in range(COLS)]
+        self.grid=[["E" for _ in range(ROWS)]for _ in range(COLS)]
         for pos in self.monsters:
             self.grid[pos[0]][pos[1]]='M'
         for pos in self.obstacles:
@@ -312,33 +332,37 @@ class Dungeon:
             pos[0]+=1
 
         pos= (pos[0],pos[1])
+        if((pos[0]<0 or pos[0]>=len(self.grid)) or (pos[1]<0 or pos[1]>=len(self.grid[0])) ):
+            # print('invalid move! out of bounds')
+            return False
+
         if(pos in self.obstacles):
-            print('invalid move! obstacle here')
+            # print('invalid move! obstacle here')
             self.player.health/=2
-            print('you lost health')
+            # print('you lost health')
             if(self.player.health<=1):
                 self.player.health = 0
-                print('you died')
+                # print('you died')
                 self.finished=True
             return False
         if(pos in self.monsters):
             if(self.player.hasWeapon):
-                print('nice you killed a monster!')
+                # print('nice you killed a monster!')
                 self.monsters.remove(pos)
                 if(len(self.monsters)==0):
-                    print('you killed all monsters you won the game!!')
+                    # print('you killed all monsters you won the game!!')
                     self.finished=True
                     self.state="won"
                 return True
             else:
-                print('invalid move! monster here')
+                # print('invalid move! monster here')
                 self.player.health = 0
-                print('you died')
+                # print('you died')
                 self.finished=True
                 # self.running=False
                 return False
         if(pos==self.weapon):
-            print('nice move! weapon here')
+            # print('nice move! weapon here')
             self.player.health = 100
             self.player.hasWeapon=True
             self.weapon=None
