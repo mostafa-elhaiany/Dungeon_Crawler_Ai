@@ -10,41 +10,15 @@ class BFS:
          
     def solve(self):
         playerStartingPos=self.game.player.pos
-        queue=[[""]]
-        sol=[""]
-        possible_moves=['up','down','left','right']
         self.game.displayGrid()
         print('starting to solve')
-
-        while not self.game.isPathToGoal(sol,self.game.weapon):
-            if(queue):
-                sol = queue.pop(0)
-                for move in possible_moves:
-                    pos = self.game.getPosFromPath(sol)
-                    if(self.game.validMove(pos,move)):
-                        new_sol = sol+[move]
-                        print(new_sol)
-                        queue.append(new_sol)
-        
-        print(sol)
+        sol=[""]
+        sol=self.shortestPath(sol,self.game.weapon)
         self.game.player.hasWeapon=True
         for monster in self.game.monsters:
-            queue=[sol]
-            print(sol)
-            while not self.game.isPathToGoal(sol,monster):
-                if(queue):
-                    sol = queue.pop(0)
-                    for move in possible_moves:
-                        pos = self.game.getPosFromPath(sol)
-                        if(self.game.validMove(pos,move)):
-                            new_sol = sol+[move]
-                            print(new_sol)
-                            queue.append(new_sol)
-        
-        print(sol)
-        # self.game.start_new_game(self.board)
+            sol =self.shortestPath(sol,monster)
+
         self.game.player.hasWeapon=False
-        # self.game.displayGrid()
         for direction in sol:
             self.game.step()
             time.sleep(0.2)
@@ -53,4 +27,15 @@ class BFS:
 
 
         
-    
+    def shortestPath(self,path, goal):
+        possible_moves=['up','down','left','right']
+        queue=[path]
+        while not self.game.isPathToGoal(path,goal):
+            if(queue):
+                path = queue.pop(0)
+                for move in possible_moves:
+                    pos = self.game.getPosFromPath(path)
+                    if(self.game.validMove(pos,move)):
+                        newPath = path+[move]
+                        queue.append(newPath)
+        return path
