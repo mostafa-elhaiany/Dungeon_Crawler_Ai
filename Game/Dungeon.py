@@ -401,6 +401,7 @@ class Dungeon:
         if(pos==self.weapon):
             return True
         return True
+
 #drawing helper functions
 
     #draws the sudoku grid
@@ -454,8 +455,8 @@ class Dungeon:
                 print(f"{col}, ",end='')
             print()
 
-    def isPathToGoal(self,path,goalPos):
-        aPlayer=Player(self.player.pos)
+    def isPathToGoal(self,path,startPos,goalPos):
+        aPlayer=Player(startPos)
         for direction in path:
             aPlayer.move(direction)
         print(aPlayer.pos,goalPos)
@@ -464,8 +465,8 @@ class Dungeon:
         # print(aPlayer.pos,goalPos)
         return False
 
-    def getPosFromPath(self,path):
-        aPlayer=Player(self.player.pos)
+    def getPosFromPath(self,path,startPos):
+        aPlayer=Player(startPos)
         for direction in path:
             aPlayer.move(direction)
         return aPlayer.pos

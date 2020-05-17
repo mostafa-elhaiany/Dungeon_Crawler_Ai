@@ -12,11 +12,15 @@ class BFS:
         playerStartingPos=self.game.player.pos
         self.game.displayGrid()
         print('starting to solve')
-        sol=[""]
-        sol=self.shortestPath(sol,self.game.weapon)
+        
+        sol=self.shortestPath(playerStartingPos,self.game.weapon)
+        print(sol)
+        time.sleep(0.2)
         self.game.player.hasWeapon=True
+        playerStartingPos=self.game.weapon
         for monster in self.game.monsters:
-            sol =self.shortestPath(sol,monster)
+            sol +=self.shortestPath(playerStartingPos,monster)
+            playerStartingPos=monster
 
         self.game.player.hasWeapon=False
         for direction in sol:
@@ -24,17 +28,18 @@ class BFS:
             time.sleep(0.2)
             self.game.validPlayerMove(self.game.player.pos,direction)
             self.game.player.move(direction)
-
+        self.game.step()
 
         
-    def shortestPath(self,path, goal):
+    def shortestPath(self,startPos, goal):
         possible_moves=['up','down','left','right']
-        queue=[path]
-        while not self.game.isPathToGoal(path,goal):
+        queue=[['']]
+        path=['']
+        while not self.game.isPathToGoal(path,startPos,goal):
             if(queue):
                 path = queue.pop(0)
                 for move in possible_moves:
-                    pos = self.game.getPosFromPath(path)
+                    pos = self.game.getPosFromPath(path,startPos)
                     if(self.game.validMove(pos,move)):
                         newPath = path+[move]
                         queue.append(newPath)
