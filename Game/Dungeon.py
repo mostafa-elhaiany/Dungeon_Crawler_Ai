@@ -9,6 +9,7 @@ class Dungeon:
     def __init__(self,board=None):
         pygame.init()
         self.window=pygame.display.set_mode((WIDTH,HEIGHT))
+        self.font = pygame.font.SysFont('arial',int(cell_size//2))
         self.running = True
         print('loading board!!')
         self.selected = None
@@ -21,15 +22,13 @@ class Dungeon:
         self.player=None
         if(not board):
             self.state='building'
-            self.grid=[['E' for _ in range(ROWS)]for _ in range(COLS)]
+            self.grid=[['E' for _ in range(COLS)]for _ in range(ROWS)]
         else:
             self.state='playing'
             self.grid=board
             self.loadBoardData()
-        self.font = pygame.font.SysFont('arial',int(cell_size//2))
-
-
         print("done loading, let's play!")
+        print(self.player)
     
 
 # main functions
@@ -47,7 +46,7 @@ class Dungeon:
         self.player=None
         if(not board):
             self.state='building'
-            self.grid=[['E' for _ in range(ROWS)]for _ in range(COLS)]
+            self.grid=[['E' for _ in range(COLS)]for _ in range(ROWS)]
         else:
             self.state='playing'
             self.grid=board
@@ -86,7 +85,7 @@ class Dungeon:
         self.finished=False
         if(not board):
             self.state='building'
-            self.grid=[[0 for _ in range(ROWS)]for _ in range(COLS)]
+            self.grid=[[0 for _ in range(COLS)]for _ in range(ROWS)]
         else:
             self.state='playing'
             self.grid=board
@@ -97,6 +96,8 @@ class Dungeon:
         self.weapon=None
         self.player=None
 
+
+
     #main loop of the game
     def run(self):
         while self.running:
@@ -105,6 +106,10 @@ class Dungeon:
             self.draw(self.state)
         pygame.quit()
         sys.exit()
+
+    def build(self):
+        while(self.state=='building'):
+            self.step()
 
     #1 step of the game for the Ai
     def step(self):
@@ -368,25 +373,52 @@ class Dungeon:
             self.weapon=None
         return True
         
-       
-    
+    #player movement helper functions
+    def validMove(self,position,direction):
+        pos = [position[0],position[1]]
+
+        if(direction=='up'):
+            pos[1]-=1
+        elif(direction=='down'):
+            pos[1]+=1
+        elif(direction=='left'):
+            pos[0]-=1
+        elif(direction=='right'):
+            pos[0]+=1
+
+        pos= (pos[0],pos[1])
+        if((pos[0]<0 or pos[0]>=len(self.grid)) or (pos[1]<0 or pos[1]>=len(self.grid[0])) ):
+            return False
+        if(pos in self.obstacles):
+            return False
+        if(pos in self.monsters):
+            if(self.player.hasWeapon):
+                if(len(self.monsters)==0):
+                    print('game won!')
+                return True
+            else:
+                return False
+        if(pos==self.weapon):
+            return True
+        return True
 #drawing helper functions
 
     #draws the sudoku grid
     def drawGrid(self,window):
         pygame.draw.rect(window,BLACK,grid_pos,2)
-        for r in range(ROWS):
-            start_x=grid_pos[0]
-            start_y= grid_pos[1]+(r*cell_size)
-            end_x=grid_pos[0]+grid_pos[2]
-            end_y= grid_pos[1]+(r*cell_size)
+        for c in range(COLS):
+            start_x=grid_pos[0]+(c*cell_size)
+            start_y= grid_pos[1]
+            end_x=grid_pos[0]+(c*cell_size)
+            end_y= grid_pos[1]+grid_pos[3]
             pygame.draw.line(window, BLACK,(start_x,start_y),(end_x,end_y),2)
-            for c in range(COLS):
-                start_x=grid_pos[0]+(c*cell_size)
-                start_y= grid_pos[1]
-                end_x=grid_pos[0]+(c*cell_size)
-                end_y= grid_pos[1]+grid_pos[3]
-                pygame.draw.line(window, BLACK,(start_x,start_y),(end_x,end_y),2)            
+            for r in range(ROWS):
+                start_x=grid_pos[0]
+                start_y= grid_pos[1]+(r*cell_size)
+                end_x=grid_pos[0]+grid_pos[2]
+                end_y= grid_pos[1]+(r*cell_size)
+                pygame.draw.line(window, BLACK,(start_x,start_y),(end_x,end_y),2)
+                        
 
     #draws the blue box showing the selected cell
     def drawSelection(self,window,pos):
@@ -421,3 +453,20 @@ class Dungeon:
             for col in row:
                 print(f"{col}, ",end='')
             print()
+
+    def isPathToGoal(self,path,goalPos):
+        aPlayer=Player(self.player.pos)
+        for direction in path:
+            aPlayer.move(direction)
+        print(aPlayer.pos,goalPos)
+        if(aPlayer.pos==goalPos):
+            return True
+        # print(aPlayer.pos,goalPos)
+        return False
+
+    def getPosFromPath(self,path):
+        aPlayer=Player(self.player.pos)
+        for direction in path:
+            aPlayer.move(direction)
+        return aPlayer.pos
+        
