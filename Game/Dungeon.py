@@ -1,7 +1,5 @@
-import pygame, sys
+import pygame, sys, math, copy
 import random as rn
-import math
-import copy
 from Game.settings import *
 from Game.Player import *
 
