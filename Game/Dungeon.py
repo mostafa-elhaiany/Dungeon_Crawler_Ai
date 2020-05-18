@@ -119,29 +119,29 @@ class Dungeon:
 
     #main draw function
     def draw(self,state):
-        self.window.fill(WHITE)
+        self.window.fill(BLACK)
             
         if self.selected:
             self.drawSelection(self.window,self.selected)
 
         if(self.weapon):
-            self.shadeCells(self.window,[self.weapon],YELLOW)
+            self.shadeCells(self.window,[self.weapon],DARK_YELLOW)
         if(self.player):
-            self.shadeCells(self.window,[self.player.pos],GREEN)
-        self.shadeCells(self.window,self.obstacles,GRAY)
-        self.shadeCells(self.window,self.monsters,RED)
+            self.shadeCells(self.window,[self.player.pos],DARK_GREEN)
+        self.shadeCells(self.window,self.obstacles,DARK_GRAY)
+        self.shadeCells(self.window,self.monsters,DARK_RED)
 
         
             
 
         self.drawGrid(self.window)
 
-        self.textToScreen(self.window,self.state, (WIDTH//2,1), colour=BLACK)
+        self.textToScreen(self.window,self.state, (WIDTH//2,1), colour=WHITE)
         if(self.state=='playing'):
-            self.textToScreen(self.window,"health", (10,20), colour=BLACK)
+            self.textToScreen(self.window,"health", (10,20), colour=WHITE)
             pygame.draw.rect(self.window,RED,(15,50,self.player.health,5))
         elif(self.state=='won' or self.state=='dead' ):
-            self.textToScreen(self.window,"press space to play again", (WIDTH//2,50), colour=BLACK)
+            self.textToScreen(self.window,"press space to play again", (WIDTH//2,50), colour=WHITE)
     
 
 
@@ -406,19 +406,19 @@ class Dungeon:
 
     #draws the sudoku grid
     def drawGrid(self,window):
-        pygame.draw.rect(window,BLACK,grid_pos,2)
+        pygame.draw.rect(window,GRAY,grid_pos,2)
         for c in range(COLS):
             start_x=grid_pos[0]+(c*cell_size)
             start_y= grid_pos[1]
             end_x=grid_pos[0]+(c*cell_size)
             end_y= grid_pos[1]+grid_pos[3]
-            pygame.draw.line(window, BLACK,(start_x,start_y),(end_x,end_y),2)
+            pygame.draw.line(window, GRAY,(start_x,start_y),(end_x,end_y),2)
             for r in range(ROWS):
                 start_x=grid_pos[0]
                 start_y= grid_pos[1]+(r*cell_size)
                 end_x=grid_pos[0]+grid_pos[2]
                 end_y= grid_pos[1]+(r*cell_size)
-                pygame.draw.line(window, BLACK,(start_x,start_y),(end_x,end_y),2)
+                pygame.draw.line(window, GRAY,(start_x,start_y),(end_x,end_y),2)
                         
 
     #draws the blue box showing the selected cell
@@ -435,7 +435,7 @@ class Dungeon:
                     self.textToScreen(window,str(col),(rIdx*cell_size + grid_pos[0]+ margin,cIdx*cell_size+ grid_pos[1]+ margin))
 
     #adds text to the GUI
-    def textToScreen(self,window,text, pos, colour=BLACK):
+    def textToScreen(self,window,text, pos, colour=WHITE):
         font = self.font.render(text,False,colour)
         window.blit(font,pos)
 
